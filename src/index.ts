@@ -10,5 +10,5 @@ const client: Client = new Client({
 });
 
 client
-	.login("NzQ4NDkzNjkyNTExNDUzMjc1.X0ePEg.cwdGJcWMOQrOkBs8yXg0tn06TPI")
+	.login("SUPER_SECRET_NEW_TOKEN")
 	.catch(() => process.exit(1));
