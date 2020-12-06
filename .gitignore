@@ -1,0 +1,5 @@
+# Ignore the node_modules directory containing all the dependencies
+node_modules
+
+# Ignore the directory where the project is built into
+bin

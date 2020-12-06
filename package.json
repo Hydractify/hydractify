@@ -1,0 +1,29 @@
+{
+	"name": "hydractify-bot",
+	"version": "1.0.0-alpha",
+	"description": "Custom bot to suffice our community's necessity",
+	"main": "bin/index.js",
+	"repository": "git@github.com:Hydractify/hydractify.git",
+	"author": "Alexandre Cavalheiro S. Tiago Da Silva <alexandre.cssilva@gmail.com>",
+	"license": "MPL2",
+	"private": true,
+	"dependencies": {
+		"discord.js": "^12.4.1",
+		"pg": "^8.5.0",
+		"reflect-metadata": "^0.1.13",
+		"typeorm": "^0.2.29",
+		"typescript": "^4.0.5"
+	},
+	"devDependencies": {
+		"@types/node": "^14.14.7",
+		"@types/ws": "^7.4.0",
+		"@typescript-eslint/eslint-plugin": "^4.7.0",
+		"@typescript-eslint/parser": "^4.7.0",
+		"eslint": "^7.13.0"
+	},
+	"scripts": {
+		"build": "tsc -p ./",
+		"start": "cd bin && node index.js",
+		"lint": "eslint --ext .js,.ts src"
+	}
+}
