@@ -1,9 +1,9 @@
-import { Client } from "discord.js";
+import { Client, ClientEvents } from "discord.js";
 
 export abstract class Module
 {
 	private readonly _client: Client;
-	private readonly _eventName: string;
+	private readonly _eventName: keyof ClientEvents;
 	private _started: boolean = false;
 
 	public readonly enabled: boolean;
@@ -38,5 +38,5 @@ export interface IModuleConfig
 {
 	client: Client;
 	enabled: boolean;
-	eventName: string;
+	eventName: keyof ClientEvents;
 }
