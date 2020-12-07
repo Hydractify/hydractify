@@ -16,7 +16,7 @@ export abstract class Module
 		this.handle = this.handle.bind(this);
 	}
 
-	protected abstract handle(...args: any[]): void | Promise<void>;
+	protected abstract handle(...args: unknown[]): void | Promise<void>;
 
 	public start(): void
 	{
