@@ -2,15 +2,16 @@ import { Client, ClientEvents } from "discord.js";
 
 export abstract class Module
 {
-	private readonly _client: Client;
 	private readonly _eventName: keyof ClientEvents;
 	private _started: boolean = false;
+
+	protected readonly client: Client;
 
 	public readonly enabled: boolean;
 
 	public constructor({ client, enabled, eventName }: IModuleConfig)
 	{
-		this._client = client;
+		this.client = client;
 		this.enabled = enabled;
 		this._eventName = eventName;
 
@@ -25,13 +26,13 @@ export abstract class Module
 		if (this._started) return;
 		this._started = true;
 
-		this._client.on(this._eventName, this.handle);
+		this.client.on(this._eventName, this.handle);
 	}
 }
 
 export interface IModule
 {
-	new(options: { client: Client }): Module;
+	new(options: { client: Client; }): Module;
 }
 
 export interface IModuleConfig
