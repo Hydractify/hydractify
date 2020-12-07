@@ -4,6 +4,7 @@ export abstract class Module
 {
 	private readonly _client: Client;
 	private readonly _eventName: string;
+	private _started: boolean = false;
 
 	public readonly enabled: boolean;
 
@@ -21,6 +22,8 @@ export abstract class Module
 	public start(): void
 	{
 		if (!this.enabled) return;
+		if (this._started) return;
+		this._started = true;
 
 		this._client.on(this._eventName, this.handle);
 	}
