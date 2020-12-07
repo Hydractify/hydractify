@@ -8,7 +8,7 @@
 	"license": "MPL2",
 	"private": true,
 	"dependencies": {
-		"discord.js": "^12.4.1",
+		"discord.js": "^12.5.1",
 		"node-cron": "^2.0.3",
 		"pg": "^8.5.0",
 		"reflect-metadata": "^0.1.13",
