@@ -3,6 +3,8 @@ import "reflect-metadata";
 import { Client } from "./structures/Client";
 import { Database } from "./handlers/Database";
 
+const { token } = require("../config.json");
+
 new Database().start();
 
 const client: Client = new Client({
@@ -10,5 +12,5 @@ const client: Client = new Client({
 });
 
 client
-	.login("SUPER_SECRET_NEW_TOKEN")
+	.login(token)
 	.catch(() => process.exit(1));

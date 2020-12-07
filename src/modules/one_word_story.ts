@@ -6,7 +6,7 @@ import MessageEntity from "../entity/Message";
 import UserEntity from "../entity/User";
 import { Module, IModuleConfig } from "../structures/Module";
 
-const { channel: channelId, enabled, eulaChannel } = require("../../config/story.json");
+const { story: { channel: channelId, enabled, eulaChannel } } = require("../../config.json");
 
 
 class OneWordStory extends Module

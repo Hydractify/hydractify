@@ -1,5 +1,8 @@
 # Ignore the node_modules directory containing all the dependencies
-node_modules
+node_modules/
 
 # Ignore the directory where the project is built into
-bin
+bin/
+
+# Hide the config file
+config.json
