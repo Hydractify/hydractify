@@ -12,6 +12,8 @@ export abstract class Module
 		this._client = client;
 		this.enabled = enabled;
 		this._eventName = eventName;
+
+		this.handle = this.handle.bind(this);
 	}
 
 	protected abstract handle(...args: any[]): void | Promise<void>;

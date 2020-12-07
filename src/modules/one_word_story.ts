@@ -17,7 +17,6 @@ export class StoryModule extends Module
 			eventName: "message",
 		});
 
-		this.handle = this.handle.bind(this);
 	}
 
 	public async handle(message: Message): Promise<void>
