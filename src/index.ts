@@ -11,6 +11,8 @@ const client: Client = new Client({
 	allowedMentions: { parse: ["users"] },
 });
 
+client.on("ready", () => console.log("Ready", client.user!.tag));
+
 client
 	.login(token)
 	.catch(() => process.exit(1));
