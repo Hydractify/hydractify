@@ -4,5 +4,12 @@
 		"enabled": false,
 		"channel": "",
 		"eulaChannel": ""
+	},
+	"guild_access": {
+		"enabled": false,
+		"channel": "",
+		"message": "",
+		"emoji": "",
+		"role": ""
 	}
 }
