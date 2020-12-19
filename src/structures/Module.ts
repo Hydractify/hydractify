@@ -29,6 +29,8 @@ export abstract class Module
 		this._started = true;
 
 		this.client.on(this._eventName, this.handle);
+
+		console.log(`Started ${this.constructor.name}`);
 	}
 }
 
