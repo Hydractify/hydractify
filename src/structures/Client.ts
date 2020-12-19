@@ -1,6 +1,6 @@
 import { Client as DJSClient, ClientOptions } from "discord.js";
 import { join } from "path";
-import { readdir } from "fs/promises";
+import { readdirSync } from "fs";
 
 import { IModule, Module } from "./Module";
 
@@ -15,10 +15,10 @@ export class Client extends DJSClient
 		this.startModules();
 	}
 
-	private async loadModules(): Promise<void>
+	private loadModules(): void
 	{
 		const path: string = join(__dirname, "..", "modules");
-		const files: string[] = await readdir(path);
+		const files: string[] = readdirSync(path);
 
 		for (const file of files)
 		{
