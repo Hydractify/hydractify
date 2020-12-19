@@ -57,7 +57,7 @@ class OneWordStory extends Module
 		if (lastMessage && lastMessage.authorId === message.author.id)
 		{
 			await message.delete();
-			await message.author.send("You already sent a message for the story!");
+			await message.author.send("You have to wait for somebody else to send a word for the story!");
 
 			return;
 		}
