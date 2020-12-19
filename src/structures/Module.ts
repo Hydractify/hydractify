@@ -16,6 +16,8 @@ export abstract class Module
 		this._eventName = eventName;
 
 		this.handle = this.handle.bind(this);
+
+		console.log(`Loaded ${this.constructor.name} using the ${eventName} event. ${enabled ? "" : "DISABLED"}`);
 	}
 
 	protected abstract handle(...args: unknown[]): void | Promise<void>;
