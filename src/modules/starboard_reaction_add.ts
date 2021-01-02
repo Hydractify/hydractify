@@ -21,11 +21,8 @@ class StarboardAdd extends Module
 	{
 		if (user.bot) return;
 
-		console.log("?");
 		const { message, emoji } = reaction;
-		console.log("??");
 		if (!message.guild) return;
-		console.log("???");
 		if (!emojis.includes(emoji.toString())) return;
 
 		const repo = getConnection().getRepository(StarboardEntity);
