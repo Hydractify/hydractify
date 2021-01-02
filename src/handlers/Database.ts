@@ -1,5 +1,7 @@
 import { Connection, createConnection, ConnectionOptions } from "typeorm";
 
+const { database: { username, password } } = require("../../config.json");
+
 export class Database
 {
 	private readonly options: ConnectionOptions;
@@ -9,8 +11,8 @@ export class Database
 		this.options = {
 			type: "postgres",
 			host: "localhost",
-			username: "hydractify",
-			password: "hyfy",
+			username,
+			password,
 			database: "hydra_bot",
 			entities: [
 				`${__dirname.replace(/handlers$/, "entity")}/**/*.js`,

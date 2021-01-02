@@ -1,8 +1,18 @@
 {
 	"token": "",
+	"database": {
+		"username": "",
+		"password": ""
+	},
 	"story": {
 		"enabled": false,
 		"channel": "",
 		"eulaChannel": ""
+	},
+	"starboard": {
+		"enabled": false,
+		"channel": "",
+		"threshold": 1,
+		"emojis": []
 	}
 }
