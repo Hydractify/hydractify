@@ -1,4 +1,4 @@
-import { MessageReaction, MessageEmbed, User, TextChannel } from "discord.js";
+import { Collection, MessageReaction, MessageEmbed, User, TextChannel } from "discord.js";
 import { getConnection } from "typeorm";
 
 import { Module, IModuleConfig } from "../structures/Module";
@@ -21,9 +21,15 @@ class StarboardAdd extends Module
 	{
 		if (user.bot) return;
 
-		const { message, emoji } = reaction;
+		const { message } = reaction;
 		if (!message.guild) return;
-		if (!emojis.includes(emoji.toString())) return;
+		if (message.author.id === user.id) return;
+
+		const reactions: Collection<string, MessageReaction> = message.reactions.cache.filter((reac: MessageReaction) =>
+		{
+			return emojis.includes(reac.emoji.toString()) && reac.users.cache.has(user.id);
+		});
+		if (!reactions.size || reactions.size > 1) return;
 
 		const repo = getConnection().getRepository(StarboardEntity);
 		let starboard = await repo.findOne(message.id);
