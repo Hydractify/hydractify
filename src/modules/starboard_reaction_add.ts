@@ -57,14 +57,14 @@ class StarboardAdd extends Module
 				color: 0xffcf05,
 				description: `[Original](${message.url})`,
 				image: {
-					url: message.attachments.first() ? message.attachments.first()!.url : undefined,
+					url: message.attachments.size ? message.attachments.first()!.url : undefined,
 				},
 			}).setTimestamp();
 
 			if (message.content) starboardEmbed.addField("Message", message.content);
 			if (message.embeds.length)
 			{
-				if (message.embeds[0].image) starboardEmbed.setImage(message.embeds[0].image.url);
+				if (message.embeds[0].thumbnail) starboardEmbed.setImage(message.embeds[0].thumbnail.url);
 			}
 			if (message.attachments.size && !starboardEmbed.image)
 			{
