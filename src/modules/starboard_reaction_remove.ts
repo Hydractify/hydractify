@@ -41,6 +41,8 @@ class StarboardRemove extends Module
 
 		const starboardChannel = message.guild.channels.resolve(channel) as TextChannel;
 
+		if (!starboard.starboardId) return;
+
 		if (starboard.stars < threshold)
 		{
 			starboardChannel.messages.resolve(starboard.starboardId!)!.delete();
@@ -49,11 +51,8 @@ class StarboardRemove extends Module
 			return;
 		}
 
-		if (starboard.starboardId)
-		{
-			starboardChannel.messages.resolve(starboard.starboardId)!
-				.edit(`**${starboard.stars}**\\🌟『${message.channel}』`);
-		}
+		starboardChannel.messages.resolve(starboard.starboardId)!
+			.edit(`**${starboard.stars}**\\🌟『${message.channel}』`);
 	}
 }
 
