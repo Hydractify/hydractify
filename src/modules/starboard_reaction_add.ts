@@ -1,10 +1,9 @@
-import { Collection, MessageReaction, MessageEmbed, User, TextChannel } from "discord.js";
-import { getConnection } from "typeorm";
+import { MessageReaction, User } from "discord.js";
 
 import { Module, IModuleConfig } from "../structures/Module";
-import StarboardEntity from "../entity/Starboard";
+import { Starboard } from "../structures/Starboard";
 
-const { starboard: { enabled, channel, threshold, emojis } } = require("../../config.json");
+const { starboard: { enabled } } = require("../../config.json");
 
 class StarboardAdd extends Module
 {
@@ -21,59 +20,18 @@ class StarboardAdd extends Module
 	{
 		if (user.bot) return;
 
-		const { message } = reaction;
+		let { message } = reaction;
+		message = await message.fetch();
+
 		if (!message.guild) return;
 		if (message.author.id === user.id) return;
 
-		const reactions: Collection<string, MessageReaction> = message.reactions.cache.filter((reac: MessageReaction) =>
-		{
-			return emojis.includes(reac.emoji.toString()) && reac.users.cache.has(user.id);
-		});
-		if (!reactions.size || reactions.size > 1) return;
+		const starboard = new Starboard(reaction);
 
-		const repo = getConnection().getRepository(StarboardEntity);
-		let starboard = await repo.findOne(message.id);
-		starboard = await repo.save({
-			messageId: message.id,
-			starboardId: starboard ? starboard.starboardId : undefined,
-			stars: starboard ? starboard.stars + 1 : 1,
-		});
-		if (starboard.stars < threshold) return;
+		const stars = await starboard.update();
+		if (!stars) return;
 
-		const starboardChannel = message.guild.channels.resolve(channel) as TextChannel;
-
-		if (starboard.starboardId)
-		{
-			starboardChannel.messages.resolve(starboard.starboardId)!
-				.edit(`**${starboard.stars}**\\🌟『${message.channel}』`);
-		}
-		else
-		{
-			const starboardEmbed = new MessageEmbed({
-				author: {
-					name: message.author.tag,
-					iconURL: message.author.displayAvatarURL(),
-				},
-				color: 0xffcf05,
-				description: `[Original](${message.url})`,
-				image: {
-					url: message.attachments.size ? message.attachments.first()!.url : undefined,
-				},
-			}).setTimestamp();
-
-			if (message.content) starboardEmbed.addField("Message", message.content);
-			if (message.embeds.length)
-			{
-				if (message.embeds[0].thumbnail) starboardEmbed.setImage(message.embeds[0].thumbnail.url);
-			}
-			if (message.attachments.size && !starboardEmbed.image)
-			{
-				starboardEmbed.setImage(message.attachments.first()!.url);
-			}
-
-			const msg = await starboardChannel.send(`**${starboard.stars}**\\🌟『${message.channel}』`, starboardEmbed);
-			repo.update(message.id, { starboardId: msg.id });
-		}
+		await starboard.updateMessage(stars);
 	}
 }
 
