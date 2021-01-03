@@ -43,11 +43,14 @@ export class Starboard
 
 		for (const [_, reac] of message.reactions.cache)
 		{
-			if (!emojis.includes(reac.emoji.toString())) return;
+			if (!emojis.includes(reac.emoji.toString())) continue;
 
 			const users = await reac.users.fetch();
 
-			users.forEach((user: User) => stars.add(user.id));
+			users.forEach((user: User) =>
+			{
+				if (user.id !== message.author.id) stars.add(user.id);
+			});
 		}
 
 		if (!await this.getStarboard())
