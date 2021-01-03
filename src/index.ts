@@ -18,7 +18,7 @@ const client: Client = new Client({
 			"GUILD_MEMBERS",
 		],
 	},
-	partials: ["MESSAGE", "REACTION"],
+	partials: ["MESSAGE", "REACTION", "USER"],
 });
 
 client.on("ready", () => console.log("Ready", client.user!.tag));
