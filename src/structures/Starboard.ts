@@ -75,7 +75,7 @@ export class Starboard
 
 		if (starboard.starboardId)
 		{
-			const starboardMsg = starboardChannel.messages.resolve(starboard.starboardId);
+			const starboardMsg = await starboardChannel.messages.fetch(starboard.starboardId);
 
 			if (stars < threshold)
 			{
