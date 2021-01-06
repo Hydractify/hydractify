@@ -101,7 +101,7 @@ export class Starboard
 			image: {
 				url: message.attachments.size ? message.attachments.first()!.url : undefined,
 			},
-		}).setTimestamp();
+		}).setTimestamp(message.createdTimestamp);
 
 		if (message.content) starboardEmbed.addField("Message", message.content);
 		if (message.embeds.length)
