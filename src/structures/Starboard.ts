@@ -53,6 +53,8 @@ export class Starboard
 			});
 		}
 
+		if (!stars.size) return;
+
 		if (!await this.getStarboard())
 		{
 			await this.create(stars.size);
