@@ -19,7 +19,7 @@ class Suggestions extends Module
 	{
 		if (message.author.bot) return;
 		if (message.channel.type === "dm") return;
-		if (message.channel !== suggestionChannel) return;
+		if (message.channel.id !== suggestionChannel) return;
 
 		await message.react(upvoteEmoji);
 		await message.react(downvoteEmoji);
