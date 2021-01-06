@@ -14,5 +14,11 @@
 		"channel": "",
 		"threshold": 1,
 		"emojis": []
+	},
+	"suggestions": {
+		"enabled": false,
+		"channel": "",
+		"upvoteEmoji": "",
+		"downvoteEmoji": ""
 	}
 }
