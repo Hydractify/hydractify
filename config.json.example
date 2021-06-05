@@ -20,5 +20,9 @@
 		"channel": "",
 		"upvoteEmoji": "",
 		"downvoteEmoji": ""
+	},
+	"self_role": {
+		"enabled": false,
+		"channel": ""
 	}
 }
