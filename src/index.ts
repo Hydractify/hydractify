@@ -9,15 +9,13 @@ new Database().start();
 
 const client: Client = new Client({
 	allowedMentions: { parse: ["users"] },
-	ws: {
-		intents: [
-			"GUILDS",
-			"DIRECT_MESSAGES",
-			"GUILD_MESSAGES",
-			"GUILD_MESSAGE_REACTIONS",
-			"GUILD_MEMBERS",
-		],
-	},
+	intents: [
+		"GUILDS",
+		"DIRECT_MESSAGES",
+		"GUILD_MESSAGES",
+		"GUILD_MESSAGE_REACTIONS",
+		"GUILD_MEMBERS",
+	],
 	partials: ["MESSAGE", "REACTION", "USER"],
 });
 

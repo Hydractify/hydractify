@@ -8,24 +8,23 @@
 	"license": "MPL2",
 	"private": true,
 	"dependencies": {
-		"discord.js": "^12.5.1",
+		"discord.js": "^13.0.0-dev.cbd7f2b9aa44a9240947ed716d0e72257ac499f7",
 		"node-cron": "^2.0.3",
 		"pg": "^8.5.0",
 		"reflect-metadata": "^0.1.13",
 		"typeorm": "^0.2.29",
-		"typescript": "^4.0.5"
+		"typescript": "4.3.2"
 	},
 	"devDependencies": {
 		"@types/node": "^14.14.7",
 		"@types/node-cron": "^2.0.3",
-		"@types/ws": "^7.4.0",
 		"@typescript-eslint/eslint-plugin": "^4.7.0",
 		"@typescript-eslint/parser": "^4.7.0",
 		"eslint": "^7.13.0"
 	},
 	"scripts": {
 		"build": "tsc -p ./",
-		"start": "cd bin && node index.js",
+		"start": "cd bin && node --enable-source-maps index.js",
 		"lint": "eslint --ext .js,.ts src"
 	}
 }
