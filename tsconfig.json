@@ -16,7 +16,8 @@
 		"strict": true,
 		"strictPropertyInitialization": false,
 		"target": "ES2020",
-		"noImplicitOverride": true
+		"noImplicitOverride": true,
+		"sourceMap": true,
 	},
 	"include": ["src"]
 }

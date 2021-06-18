@@ -22,6 +22,8 @@ export class Client extends DJSClient
 
 		for (const file of files)
 		{
+			if (!file.endsWith(".js")) continue;
+
 			const moduleConstructor = require(join(path, file)).Module as IModule;
 			const module = new moduleConstructor({ client: this });
 
