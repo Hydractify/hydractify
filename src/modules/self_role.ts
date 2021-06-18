@@ -101,6 +101,11 @@ export const SelfRoleCommand: ApplicationCommandData = {
 			name: SubCommand[SubCommand.deploy],
 			type: ApplicationCommandOptionTypes.SUB_COMMAND,
 			description: "Deploys the self role message.",
+			options: [{
+				name: "message",
+				type: ApplicationCommandOptionTypes.STRING,
+				description: "The id of the message in the self roles channel to update.",
+			}],
 		},
 		{
 			name: SubCommand[SubCommand.cleanup],
@@ -216,7 +221,7 @@ class SelfRoleModule extends Module
 		}
 	}
 
-	private async add(interaction: CommandInteraction, options: Map<string, CommandInteractionOption>)
+	private async add(interaction: CommandInteraction, options: NonNullable<CommandInteractionOption["options"]>)
 	{
 		const repo = getConnection().getRepository(SelfRole);
 
@@ -252,7 +257,7 @@ class SelfRoleModule extends Module
 		await interaction.reply(response);
 	}
 
-	private async remove(interaction: CommandInteraction, options: Map<string, CommandInteractionOption>)
+	private async remove(interaction: CommandInteraction, options: NonNullable<CommandInteractionOption["options"]>)
 	{
 		const repo = getConnection().getRepository(SelfRole);
 
@@ -295,9 +300,11 @@ class SelfRoleModule extends Module
 		}
 	}
 
-	private async deploy(interaction: CommandInteraction)
+	private async deploy(interaction: CommandInteraction, options: NonNullable<CommandInteractionOption["options"]>)
 	{
 		const repo = getConnection().getRepository(SelfRole);
+
+		const messageID = options.get("message")?.value as Snowflake;
 
 		const channel = this.client.channels.resolve(channelID);
 		if (!channel)
@@ -323,7 +330,7 @@ class SelfRoleModule extends Module
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			.filter(([_, r]) => r) as [SelfRole, Role][];
 
-		const options: MessageOptions = {
+		const messageOptions: MessageOptions = {
 			content: "Click the buttons below to toggle a role on you.",
 			components: chunkArray(roles, 5)
 				.map<MessageActionRowOptions>(row =>
@@ -341,20 +348,32 @@ class SelfRoleModule extends Module
 
 		try
 		{
-			await channel.send(options);
-			await interaction.reply(
-				`Successfully sent a message for self roles into ${channel}.`
-				+ "\nYou may want to delete the old message if you did not already.",
-			);
+			if (messageID)
+			{
+				await channel.messages.edit(messageID, messageOptions);
+			}
+			else
+			{
+				await channel.send(messageOptions);
+			}
 		}
 		catch (error: unknown)
 		{
 			await interaction.reply(
-				`Failed to send the message: \`${(error as DiscordAPIError).message}\``,
+				`Failed to send or edit the message: \`${(error as DiscordAPIError).message}\``,
 			);
 
 			throw error;
 		}
+
+		const response = messageID
+			? `Successfully edited the message for self roles in ${channel}.`
+			: `Successfully sent a message for self roles into ${channel}.`;
+
+		await interaction.reply(
+			response
+			+ "\nYou may want to delete the old message if you did not already.",
+		);
 	}
 
 	private async cleanup(interaction: CommandInteraction)
