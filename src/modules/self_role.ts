@@ -368,12 +368,10 @@ class SelfRoleModule extends Module
 
 		const response = messageID
 			? `Successfully edited the message for self roles in ${channel}.`
-			: `Successfully sent a message for self roles into ${channel}.`;
+			: `Successfully sent a message for self roles into ${channel}.`
+			+ "\nYou may want to delete the old message, if there is one, now.";
 
-		await interaction.reply(
-			response
-			+ "\nYou may want to delete the old message if you did not already.",
-		);
+		await interaction.reply(response);
 	}
 
 	private async cleanup(interaction: CommandInteraction)
