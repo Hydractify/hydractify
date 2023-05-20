@@ -1,15 +1,15 @@
 # **!!This branch is under development!!**
 
-# Introduction
+## Introduction
 
 This is a [Discord] application for experimenting ideas on and serve [our community](https://discord.com/invite/uBdXdE9) needs.
 
-# Requirements
+## Requirements
 
 * [Rust]
 * [PostgreSQL]
 
-# Getting started
+## Getting started
 
 Firstly what you want to do is clone this repository: 
 ```sh
@@ -31,7 +31,7 @@ Once that's done, ensure it's binary in your `$PATH` then run:
 diesel migration run
 ```
 
-Now you can just run the application! If you're not familiar with rust, you can run it through your terminal with:
+Now you can just run the application! If you're not familiar with [Rust], you can run it through your terminal with:
 ```sh
 cargo run
 ```
@@ -52,6 +52,11 @@ When enabled and the message is _deployed_ then when a [Discord] user interacts 
 ![Self Role deploy example](./docs/self_role_deploy.png)
 
 > _More documentation is needed later, with screenshots when ran in the actual bot._
+
+## Special thanks
+
+This implementation is heavily based off of [etternabot](https://github.com/kangalio/etternabot/), it was a great starting point for me to understand how [`poise`](https://github.com/serenity-rs/poise/) and [`serenity`](https://github.com/serenity-rs/serenity/) work!
+
 
 [Discord]: https://discord.com/
 [PostgreSQL]: https://www.postgresql.org/
