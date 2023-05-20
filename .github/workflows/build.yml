@@ -7,6 +7,7 @@ on:
     branches-ignore: [master] 
   pull_request:
     branches: ["**"]
+    paths: ["**.rs"]
 
 jobs:
   build_and_test:
