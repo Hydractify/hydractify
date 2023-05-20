@@ -13,7 +13,7 @@ This is a [Discord] application for experimenting ideas on and serve [our commun
 
 Firstly what you want to do is clone this repository: 
 ```sh
-git clone -b dev/rewrite https://github.com/Hydractify/hydractify.git`
+git clone -b dev/rewrite https://github.com/Hydractify/hydractify.git
 ```
 
 From here you will configure the application with `config.toml`, you can use [`config.example.toml`](./config.example.toml) as a reference. Here you will set:
