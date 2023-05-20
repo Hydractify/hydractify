@@ -1,0 +1,24 @@
+name: Build Code Base
+
+on:
+  push:
+    # By this point it will have been caught by a pull request, 
+    # so we ignore master
+    branches-ignore: [master] 
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  build_and_test:
+    name: Build Code Base
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --all-features
