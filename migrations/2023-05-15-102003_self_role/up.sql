@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS self_role (
+  id BIGINT PRIMARY KEY,
+  style INTEGER NOT NULL,
+  emoji TEXT NULL
+)

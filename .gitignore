@@ -1,0 +1,5 @@
+# Ignore build directory
+/target
+
+# Ignore configuration files
+config.toml

@@ -1,0 +1,6 @@
+database_url = ""
+token = ""
+
+[self_roles]
+enabled = false
+channel = ""
