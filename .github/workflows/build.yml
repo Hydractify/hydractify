@@ -5,6 +5,7 @@ on:
     # By this point it will have been caught by a pull request, 
     # so we ignore master
     branches-ignore: [master] 
+    paths: ["**.rs"]
   pull_request:
     branches: ["**"]
     paths: ["**.rs"]
