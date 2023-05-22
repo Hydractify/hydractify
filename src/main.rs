@@ -32,7 +32,6 @@ pub struct StarboardOptions {
 
 #[derive(Deserialize)]
 pub struct Config {
-    pub database_url: String,
     pub self_roles: SelfRoleOptions,
     pub starboard: StarboardOptions,
     pub token: String,

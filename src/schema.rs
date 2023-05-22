@@ -16,4 +16,9 @@ diesel::table! {
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(self_role, starboard,);
+// Gotta ignore this since `diesel` will go against rustfmt.
+#[rustfmt::skip]
+diesel::allow_tables_to_appear_in_same_query!(
+    self_role,
+    starboard,
+);

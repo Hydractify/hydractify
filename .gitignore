@@ -2,4 +2,5 @@
 /target
 
 # Ignore configuration files
+.env
 config.toml

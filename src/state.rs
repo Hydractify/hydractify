@@ -16,7 +16,7 @@ pub struct State {
 impl State {
     pub async fn load(_ctx: &Context, config: Config) -> Self {
         Self {
-            database_connection: database::establish_connection(&config.database_url),
+            database_connection: database::establish_connection(),
             config,
         }
     }

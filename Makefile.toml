@@ -1,16 +1,39 @@
+# Sets the environment variables we need in tasks.
+env_files = [".env"]
+
+[tasks.format]
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt", "--", "--emit=files"]
+
+[tasks.install_diesel]
+install_crate = "diesel_cli"
+install_crate_args = ["--no-default-features", "--features", "postgres"]
+
+[tasks.run_migrations]
+command = "diesel"
+args = ["migration", "run"]
+dependencies = ["install_diesel"]
+
 [tasks.build]
 command = "cargo"
 args = ["build"]
 
-[tasks.build_release]
-command = "cargo"
-args = ["build", "--release"]
-
 [tasks.run]
 command = "cargo"
 args = ["run"]
+dependencies = ["build_release", "run_migrations"]
+
+[tasks.clean]
+command = "cargo"
+args = ["clean", "--release"]
+
+[tasks.build_release]
+command = "cargo"
+args = ["build", "--release"]
+dependencies = ["clean"]
 
 [tasks.run_release]
 command = "cargo"
 args = ["run", "--release"]
-dependencies = ["build"]
+dependencies = ["build_release", "run_migrations"]
