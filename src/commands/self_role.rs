@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use poise::serenity_prelude::{
-    model::application::component::ButtonStyle, ChannelId, CreateButton, ReactionType, Role, RoleId,
+    model::application::component::ButtonStyle, ChannelId, CreateButton, CreateComponents,
+    ReactionType, Role, RoleId,
 };
 
 use crate::{models::SelfRole, Context, Error};
@@ -31,6 +32,33 @@ impl StyleOptions {
     }
 }
 
+/// Creates the common component that we send when deploying self roles.
+pub fn create_component<'a>(
+    menu: &'a mut CreateComponents,
+    roles: HashMap<RoleId, (&Role, SelfRole)>,
+) -> &'a mut CreateComponents {
+    menu.create_action_row(|row| {
+        for role in roles {
+            let guild_role = role.1 .0;
+            let database_data = role.1 .1;
+
+            let mut button = CreateButton::default();
+            button
+                .label(&guild_role.name)
+                .style(StyleOptions::convert_from_int(database_data.style))
+                .custom_id(format!("self-role-{}", database_data.id));
+
+            if let Some(emoji) = database_data.emoji {
+                button.emoji(emoji.clone().parse::<ReactionType>().unwrap());
+            }
+
+            row.add_button(button);
+        }
+
+        row
+    })
+}
+
 #[poise::command(slash_command, rename = "selfrole", subcommands("add", "deploy"))]
 pub async fn self_role(_ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
@@ -39,7 +67,7 @@ pub async fn self_role(_ctx: Context<'_>) -> Result<(), Error> {
 // Perhaps we should eventually use selection menus instead of buttons? That way users can only add
 // what hasn't already been added.
 /// Add a role to the list of available self roles.
-#[poise::command(slash_command)]
+#[poise::command(slash_command, ephemeral)]
 pub async fn add(
     ctx: Context<'_>,
     #[description = "The role to add to the list of self roles"] role: Role,
@@ -48,10 +76,11 @@ pub async fn add(
 ) -> Result<(), Error> {
     if role.id.as_u64() == ctx.guild().unwrap().id.as_u64() {
         ctx.send(|message| {
-            message
-                .content("The everyone role may not be self-assignable; It's the everyone role after all.")
-                .ephemeral(true)
-        }).await?;
+            message.content(
+                "The everyone role may not be self-assignable; It's the everyone role after all.",
+            )
+        })
+        .await?;
 
         return Ok(());
     }
@@ -70,8 +99,6 @@ pub async fn add(
     )?;
 
     ctx.send(|message| {
-        message.ephemeral = true;
-
         if let Err(_) = selfrole_result {
             message.content(format!(
                 concat!(
@@ -98,7 +125,7 @@ pub async fn add(
 /// Deploys the previously configured self roles.
 ///
 /// If you have not configured it yet, do so through `/selfrole add`!
-#[poise::command(slash_command)]
+#[poise::command(slash_command, ephemeral)]
 pub async fn deploy(
     ctx: Context<'_>,
     #[description = "The id of the message in the self roles channel to update."] message: Option<
@@ -139,29 +166,7 @@ pub async fn deploy(
                 m.edit(&ctx.serenity_context().http, |old_message| {
                     old_message
                         .content("Click the buttons below to toggle a role on you.")
-                        .components(|menu| {
-                            menu.create_action_row(|row| {
-                                for role in guild_roles {
-                                    let guild_role = role.1 .0;
-                                    let database_data = role.1 .1;
-
-                                    let mut button = CreateButton::default();
-                                    button
-                                        .label(&guild_role.name)
-                                        .style(StyleOptions::convert_from_int(database_data.style))
-                                        .custom_id(format!("self-role-{}", database_data.id));
-
-                                    if let Some(emoji) = database_data.emoji {
-                                        button
-                                            .emoji(emoji.clone().parse::<ReactionType>().unwrap());
-                                    }
-
-                                    row.add_button(button);
-                                }
-
-                                row
-                            })
-                        })
+                        .components(|menu| create_component(menu, guild_roles))
                 })
                 .await?;
 
@@ -173,7 +178,6 @@ pub async fn deploy(
                         ),
                         channel.id
                     ))
-                    .ephemeral(true)
                 })
                 .await?;
             }
@@ -182,29 +186,7 @@ pub async fn deploy(
             channel
                 .send_message(&ctx.serenity_context().http, |msg| {
                     msg.content("Click the buttons below to toggle a role on you.")
-                        .components(|menu| {
-                            menu.create_action_row(|row| {
-                                for role in guild_roles {
-                                    let guild_role = role.1 .0;
-                                    let database_data = role.1 .1;
-
-                                    let mut button = CreateButton::default();
-                                    button
-                                        .label(&guild_role.name)
-                                        .style(StyleOptions::convert_from_int(database_data.style))
-                                        .custom_id(format!("self-role-{}", database_data.id));
-
-                                    if let Some(emoji) = database_data.emoji {
-                                        button
-                                            .emoji(emoji.clone().parse::<ReactionType>().unwrap());
-                                    }
-
-                                    row.add_button(button);
-                                }
-
-                                row
-                            })
-                        })
+                        .components(|menu| create_component(menu, guild_roles))
                 })
                 .await?;
 
@@ -216,7 +198,6 @@ pub async fn deploy(
                     ),
                     channel.id
                 ))
-                .ephemeral(true)
             })
             .await?;
         }
