@@ -4,10 +4,10 @@ use poise::serenity_prelude::{
 use regex::Regex;
 
 use super::commands;
-use crate::{Config, Error, State};
+use crate::{listeners::starboard, Config, Error, State};
 
-// Handle Discord events
-// https://discord.com/developers/docs/topics/gateway-events#receive-events
+/// Handle Discord events
+/// <https://discord.com/developers/docs/topics/gateway-events#receive-events>
 async fn listener(
     ctx: &serenity::Context,
     event: &poise::Event<'_>,
@@ -94,11 +94,17 @@ async fn listener(
 
             Ok(())
         }
+        poise::Event::ReactionAdd { add_reaction } => {
+            starboard::handle_reaction(ctx, state, add_reaction).await
+        }
+        poise::Event::ReactionRemove { removed_reaction } => {
+            starboard::handle_reaction(ctx, state, removed_reaction).await
+        }
         _ => Ok(()),
     }
 }
 
-// Configures and starts the Discord application
+/// Configures and starts the Discord application
 pub async fn start(config: Config) -> Result<(), Error> {
     poise::Framework::builder()
         .options(poise::FrameworkOptions {
@@ -121,8 +127,7 @@ pub async fn start(config: Config) -> Result<(), Error> {
                 | serenity::GatewayIntents::GUILDS
                 | serenity::GatewayIntents::GUILD_MEMBERS
                 | serenity::GatewayIntents::GUILD_MESSAGES
-                | serenity::GatewayIntents::GUILD_MESSAGE_REACTIONS, // Not needed at the moment,
-                                                                     // but when we implement the starboard module, it will be.
+                | serenity::GatewayIntents::GUILD_MESSAGE_REACTIONS,
         )
         .setup(|ctx, _ready, framework| {
             Box::pin(async move {

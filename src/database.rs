@@ -1,7 +1,7 @@
 use diesel::pg::PgConnection;
 use diesel::r2d2::{ConnectionManager, Pool};
 
-// Establishes connection with the database.
+/// Establishes connection with the database.
 pub fn establish_connection(url: &str) -> Pool<ConnectionManager<PgConnection>> {
     let connection_manager = ConnectionManager::<PgConnection>::new(url);
 

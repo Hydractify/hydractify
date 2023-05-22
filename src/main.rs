@@ -4,12 +4,10 @@ pub mod schema;
 
 pub mod commands;
 pub mod framework;
+pub mod listeners;
 
 pub mod state;
 pub use state::State;
-
-// Use is here for ease of use through `crate::serenity`.
-use poise::serenity_prelude as serenity;
 
 use serde::Deserialize;
 use std::fs;
@@ -20,14 +18,23 @@ type Context<'a> = poise::Context<'a, State, Error>;
 
 #[derive(Deserialize)]
 pub struct SelfRoleOptions {
-    pub enabled: bool,
     pub channel: String,
+    pub enabled: bool,
+}
+
+#[derive(Deserialize)]
+pub struct StarboardOptions {
+    pub channel: String,
+    pub emojis: Vec<String>,
+    pub enabled: bool,
+    pub threshold: u8,
 }
 
 #[derive(Deserialize)]
 pub struct Config {
     pub database_url: String,
     pub self_roles: SelfRoleOptions,
+    pub starboard: StarboardOptions,
     pub token: String,
 }
 

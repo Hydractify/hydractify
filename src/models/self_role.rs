@@ -15,7 +15,7 @@ pub struct SelfRole {
 }
 
 impl SelfRole {
-    // Searches a specific registered role.
+    /// Searches a specific registered role.
     pub fn find_one(
         connection: &mut PooledConnection<ConnectionManager<PgConnection>>,
         id: i64,
@@ -23,19 +23,19 @@ impl SelfRole {
         use self_role::dsl;
 
         dsl::self_role
-            .filter(dsl::id.eq(i64::from(id)))
+            .filter(dsl::id.eq(id))
             .limit(1)
             .get_result::<SelfRole>(connection)
     }
 
-    // Gets all the roles registered.
+    /// Gets all the roles registered.
     pub fn get_all(
         connection: &mut PooledConnection<ConnectionManager<PgConnection>>,
     ) -> Result<Vec<SelfRole>, diesel::result::Error> {
         self_role::dsl::self_role.get_results(connection)
     }
 
-    // Upserts a `SelfRole` into the database.
+    /// Upserts a `SelfRole` into the database.
     pub fn upsert(
         connection: &mut PooledConnection<ConnectionManager<PgConnection>>,
         row: SelfRole,

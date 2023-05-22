@@ -4,3 +4,9 @@ token = ""
 [self_roles]
 enabled = false
 channel = ""
+
+[starboard]
+enabled = false
+channel = ""
+emojis = []
+threshold = 1
