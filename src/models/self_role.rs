@@ -58,4 +58,24 @@ impl SelfRole {
 
         Ok(())
     }
+
+    /// Removes a role by id, returning whether the role was actually deleted, otherwise it wasn't there to begin with
+    pub fn remove(
+        connection: &mut PooledConnection<ConnectionManager<PgConnection>>,
+        id: i64,
+    ) -> Result<bool, diesel::result::Error> {
+        diesel::delete(self_role::table.filter(self_role::id.eq(id)))
+            .execute(connection)
+            .map(|count| count > 0)
+    }
+
+    /// Removes multiple roles by id
+    pub fn remove_all(
+        connection: &mut PooledConnection<ConnectionManager<PgConnection>>,
+        ids: &Vec<i64>,
+    ) -> Result<(), diesel::result::Error> {
+        diesel::delete(self_role::table.filter(self_role::id.eq_any(ids)))
+            .execute(connection)
+            .map(|_| ())
+    }
 }

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use poise::serenity_prelude::{
     model::application::component::ButtonStyle, ChannelId, CreateButton, CreateComponents,
-    ReactionType, Role, RoleId,
+    ReactionType, Role, RoleId, Mentionable,
 };
 
 use crate::{models::SelfRole, Context, Error};
@@ -28,6 +28,16 @@ impl StyleOptions {
             x if x == StyleOptions::Success as i32 => ButtonStyle::Success,
             x if x == StyleOptions::Danger as i32 => ButtonStyle::Danger,
             _ => ButtonStyle::Primary,
+        }
+    }
+
+    pub fn name_from_int(value: i32) -> &'static str {
+        match value {
+            x if x == StyleOptions::Primary as i32 => "PRIMARY",
+            x if x == StyleOptions::Secondary as i32 => "SECONDARY",
+            x if x == StyleOptions::Success as i32 => "SUCCESS",
+            x if x == StyleOptions::Danger as i32 => "DANGER",
+            _ => "UNKNOWN",
         }
     }
 }
@@ -59,7 +69,11 @@ pub fn create_component<'a>(
     })
 }
 
-#[poise::command(slash_command, rename = "selfrole", subcommands("add", "deploy"))]
+#[poise::command(
+    slash_command,
+    rename = "selfrole",
+    subcommands("add", "remove", "deploy", "show", "cleanup")
+)]
 pub async fn self_role(_ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
@@ -118,6 +132,34 @@ pub async fn add(
         }
     })
     .await?;
+
+    Ok(())
+}
+
+/// Remove a role from the list of available self roles.
+#[poise::command(slash_command, ephemeral)]
+pub async fn remove(
+    ctx: Context<'_>,
+    #[description = "The role to remove from the list of self roles"] role: Role,
+) -> Result<(), Error> {
+    let removed = SelfRole::remove(
+        &mut ctx.data().database_connection.get()?,
+        i64::from(role.id),
+    )?;
+
+    let response = if removed {
+        format!(
+            concat!(
+                "The {} role is no longer self assignable!\n",
+                "Make sure to `/selfrole deploy` this change."
+            ),
+            role
+        )
+    } else {
+        format!("The {role} role is not self assignable.")
+    };
+	
+    ctx.say(response).await?;
 
     Ok(())
 }
@@ -202,6 +244,67 @@ pub async fn deploy(
             .await?;
         }
     }
+
+    Ok(())
+}
+
+/// Show all available self roles.
+#[poise::command(slash_command, ephemeral)]
+pub async fn show(ctx: Context<'_>) -> Result<(), Error> {
+    let roles = SelfRole::get_all(&mut ctx.data().database_connection.get()?)?
+        .iter()
+        .map(|self_role| {
+            format!(
+                "{} (emoji: {}, style: {})",
+                RoleId::from(self_role.id as u64).mention(),
+                self_role.emoji.clone().unwrap_or(String::from("none")),
+                StyleOptions::name_from_int(self_role.style)
+            )
+        })
+        .collect::<Vec<String>>()
+        .join(", ");
+
+    let response = if roles.is_empty() {
+        "There are not self assignable roles.".into()
+    } else {
+        format!("Self assignable roles are: {}", roles)
+    };
+
+    ctx.say(response).await?;
+
+    Ok(())
+}
+
+/// Removes deleted roles from the list of self assignable roles.
+#[poise::command(slash_command, ephemeral)]
+pub async fn cleanup(ctx: Context<'_>) -> Result<(), Error> {
+    let connection = &mut ctx.data().database_connection.get()?;
+
+    let guild_roles = ctx.guild().unwrap().roles;
+
+    let deleted_roles: Vec<i64> = SelfRole::get_all(connection)?
+        .iter()
+        .filter_map(|self_role| {
+            if guild_roles.contains_key(&RoleId::from(self_role.id as u64)) {
+                Some(self_role.id)
+            } else {
+                None
+            }
+        })
+        .collect();
+
+    let response = if deleted_roles.is_empty() {
+        "There are no roles to prune.".into()
+    } else {
+        SelfRole::remove_all(connection, &deleted_roles)?;
+
+        format!(
+            "Removed {} no longer existing self assignable roles from the list.",
+            deleted_roles.len()
+        )
+    };
+
+    ctx.say(response).await?;
 
     Ok(())
 }
