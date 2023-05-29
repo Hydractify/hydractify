@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use poise::serenity_prelude::{
     model::application::component::ButtonStyle, ChannelId, CreateButton, CreateComponents,
-    ReactionType, Role, RoleId, Mentionable,
+    Mentionable, ReactionType, Role, RoleId,
 };
 
 use crate::{models::SelfRole, Context, Error};
@@ -158,7 +158,7 @@ pub async fn remove(
     } else {
         format!("The {role} role is not self assignable.")
     };
-	
+
     ctx.say(response).await?;
 
     Ok(())
