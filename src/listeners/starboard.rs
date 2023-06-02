@@ -4,7 +4,7 @@ use crate::{models::Starboard, Error, State};
 
 pub async fn update_starboard(
     ctx: &Context,
-    state: &State,
+    state: &State<'_>,
     reaction: &Reaction,
 ) -> Result<(), Error> {
     let config = &state.config.starboard;
@@ -46,7 +46,11 @@ pub async fn update_starboard(
         i64::from(reaction.message_id),
     ) {
         Ok(db_entry) => {
-            let channel = reaction.channel(&ctx.http).await?;
+            let channel = ctx
+                .http
+                .get_channel(state.config.starboard.channel.parse::<u64>().unwrap())
+                .await?;
+
             let mut starboard_message = channel
                 .id()
                 .message(&ctx.http, db_entry.starboard_id.unwrap() as u64)
@@ -72,7 +76,10 @@ pub async fn update_starboard(
                 return Ok(());
             }
 
-            let channel = reaction.channel(&ctx.http).await?;
+            let channel = ctx
+                .http
+                .get_channel(state.config.starboard.channel.parse::<u64>().unwrap())
+                .await?;
 
             let msg_sent = channel
                 .id()
@@ -110,7 +117,7 @@ pub async fn update_starboard(
 /// Handles the starboard when a reaction gets added.
 pub async fn handle_reaction(
     ctx: &Context,
-    state: &State,
+    state: &State<'_>,
     reaction: &Reaction,
 ) -> Result<(), Error> {
     if reaction.user(&ctx.http).await?.bot {
