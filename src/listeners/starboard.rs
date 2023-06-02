@@ -4,7 +4,7 @@ use crate::{models::Starboard, Error, State};
 
 pub async fn update_starboard(
     ctx: &Context,
-    state: &State<'_>,
+    state: &State,
     reaction: &Reaction,
 ) -> Result<(), Error> {
     let config = &state.config.starboard;
@@ -117,7 +117,7 @@ pub async fn update_starboard(
 /// Handles the starboard when a reaction gets added.
 pub async fn handle_reaction(
     ctx: &Context,
-    state: &State<'_>,
+    state: &State,
     reaction: &Reaction,
 ) -> Result<(), Error> {
     if reaction.user(&ctx.http).await?.bot {
