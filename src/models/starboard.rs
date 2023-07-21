@@ -32,14 +32,22 @@ impl Starboard {
     /// Searches a specific registered starboard.
     pub fn find_one(
         connection: &mut PooledConnection<ConnectionManager<PgConnection>>,
-        id: i64,
+        message_id: Option<i64>,
+        starboard_id: Option<i64>,
     ) -> Result<Starboard, diesel::result::Error> {
         use starboard::dsl;
 
-        dsl::starboard
-            .filter(dsl::message_id.eq(id))
-            .limit(1)
-            .get_result::<Starboard>(connection)
+        let mut query = dsl::starboard.into_boxed();
+
+        if let Some(id) = message_id {
+            query = query.filter(dsl::message_id.eq(id))
+        }
+
+        if let Some(id) = starboard_id {
+            query = query.filter(dsl::starboard_id.eq(id))
+        }
+
+        query.limit(1).get_result::<Starboard>(connection)
     }
 
     /// Upserts a `Starboard` into the database.

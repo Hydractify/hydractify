@@ -59,7 +59,7 @@ pub fn create_component<'a>(
                 .custom_id(format!("self-role-{}", database_data.id));
 
             if let Some(emoji) = database_data.emoji {
-                button.emoji(emoji.clone().parse::<ReactionType>().unwrap());
+                button.emoji(emoji.parse::<ReactionType>().unwrap());
             }
 
             row.add_button(button);
@@ -257,7 +257,7 @@ pub async fn show(ctx: Context<'_>) -> Result<(), Error> {
             format!(
                 "{} (emoji: {}, style: {})",
                 RoleId::from(self_role.id as u64).mention(),
-                self_role.emoji.clone().unwrap_or(String::from("none")),
+                self_role.emoji.as_ref().unwrap_or(&String::from("none")),
                 StyleOptions::name_from_int(self_role.style)
             )
         })

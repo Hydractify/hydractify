@@ -40,7 +40,12 @@ pub struct Config {
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     // Reads configuration to pass through the bot.
-    let config: Config = toml::from_str(&fs::read_to_string("./config.toml").unwrap()).unwrap();
+    let config: Config;
+
+    match fs::read_to_string("./config.toml") {
+        Ok(content) => config = toml::from_str(&content).unwrap(),
+        Err(_) => panic!("There is no `config.toml` in this path."),
+    }
 
     // Starts up the bot.
     framework::start(config).await?;

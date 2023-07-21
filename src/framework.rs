@@ -28,10 +28,10 @@ async fn listener(
             Ok(())
         }
         poise::Event::ReactionAdd { add_reaction } => {
-            starboard::handle_reaction(ctx, state, add_reaction).await
+            starboard::handle_reaction(ctx, state, add_reaction, true).await
         }
         poise::Event::ReactionRemove { removed_reaction } => {
-            starboard::handle_reaction(ctx, state, removed_reaction).await
+            starboard::handle_reaction(ctx, state, removed_reaction, false).await
         }
         _ => Ok(()),
     }
