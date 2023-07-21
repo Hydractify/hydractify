@@ -27,9 +27,9 @@ pub async fn handle_reaction(
 
     let message = reaction.message(&ctx.http).await?;
 
-    // if message.author.id == reaction.user(&ctx.http).await?.id {
-    //     return Ok(());
-    // }
+    if message.author.id == reaction.user(&ctx.http).await?.id {
+        return Ok(());
+    }
 
     let config = &state.config.starboard;
 
@@ -51,18 +51,25 @@ pub async fn handle_reaction(
     // Go through all the reactions and count the valid ones for starboard.
     let mut user_reactions: Vec<u64> = Vec::new();
 
-    for reac in message.reactions.iter().filter(|r| {
-        config
+    for reac in message.reactions.iter() {
+        if config
             .emojis
             .iter()
-            .any(|e| e == &r.reaction_type.to_string())
-    }) {
-        user_reactions = collect_users(
-            reaction
-                .users::<ReactionType, User>(&ctx.http, reac.reaction_type.clone(), Some(100), None)
-                .await?,
-        )
+            .any(|e| e == &reac.reaction_type.to_string())
+        {
+            user_reactions.append(&mut collect_users(
+                reaction
+                    .users::<ReactionType, User>(
+                        &ctx.http,
+                        reac.reaction_type.clone(),
+                        Some(100),
+                        None,
+                    )
+                    .await?,
+            ))
+        }
     }
+    user_reactions.dedup(); // Make sure we don't have duplicate users from multiple reactions.
 
     // Gotta create the variable here so we can await, you can't do that in a match.
     let message_link = message.link_ensured(&ctx.http).await;
@@ -116,7 +123,7 @@ pub async fn handle_reaction(
                     msg.content(format!(
                         "**{}**🌟『{}』",
                         user_reactions.len(),
-                        channel.mention()
+                        message.channel_id.mention()
                     ))
                 })
                 .await?;
@@ -139,7 +146,7 @@ pub async fn handle_reaction(
                     msg.content(format!(
                         "**{}**🌟『{}』",
                         user_reactions.len(),
-                        channel.mention()
+                        message.channel_id.mention()
                     ))
                     .add_embed(|e| {
                         e.author(|a| {
