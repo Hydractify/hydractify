@@ -1,14 +1,26 @@
-use poise::serenity_prelude::{Context, Mentionable, Reaction, ReactionType, User};
+use poise::serenity_prelude::{Context, Mentionable, Reaction, ReactionType, User, UserId};
 
 use crate::{models::Starboard, Error, State};
 
 /// Collects the user IDs without duplicates
-pub fn collect_users(reaction_users: Vec<User>) -> Vec<u64> {
+pub fn collect_users(reaction_users: Vec<User>, message_user_id: UserId) -> Vec<u64> {
     let mut users: Vec<u64> = reaction_users
         .iter()
-        .map(|user| user.id.as_u64().clone())
+        .filter_map(|user| {
+            if user.bot {
+                // Make sure we don't count reactions added by bots.
+                None
+            } else if message_user_id == user.id {
+                // Make sure we also don't count a
+                // reaction from the creator of the message.
+                None
+            } else {
+                Some(user.id.as_u64().clone())
+            }
+        })
         .collect();
 
+    // This will remove any IDs that repeat from the vector.
     users.dedup();
 
     users
@@ -19,18 +31,22 @@ pub async fn handle_reaction(
     ctx: &Context,
     state: &State,
     reaction: &Reaction,
-    addition: bool,
 ) -> Result<(), Error> {
-    if reaction.user(&ctx.http).await?.bot {
+    let user_from_reaction = reaction.user(&ctx.http).await?;
+
+    // Stop if it's a bot who reacted.
+    if user_from_reaction.bot {
         return Ok(());
     }
 
     let message = reaction.message(&ctx.http).await?;
 
-    if message.author.id == reaction.user(&ctx.http).await?.id {
+    // Stop if the reaction was added by the user.
+    if message.author.id == user_from_reaction.id {
         return Ok(());
     }
 
+    // The configuration of the starboard, found in `config.toml`.
     let config = &state.config.starboard;
 
     // Make sure we don't handle the starboard if we disabled it.
@@ -66,6 +82,7 @@ pub async fn handle_reaction(
                         None,
                     )
                     .await?,
+                message.author.id, // We pass the author ID to filter their reactions out.
             ))
         }
     }
@@ -82,6 +99,8 @@ pub async fn handle_reaction(
 
     // Check wheter they're reacting to a starboard message, that way we don't create a new entry
     // but we also allow them to add stars into that starboard message.
+    // TODO: This is super hacky, let's uh... Work on this at some point please. We fetch twice
+    // because of this logic.
     let mut starboard_id = None;
     let mut message_id = None;
     if let Ok(_) = Starboard::find_one(
@@ -101,6 +120,7 @@ pub async fn handle_reaction(
         starboard_id,
     ) {
         Ok(db_entry) => {
+            // If there is an entry, update the message in the starboard channel.
             let channel = ctx
                 .http
                 .get_channel(state.config.starboard.channel.parse::<u64>().unwrap())
@@ -127,10 +147,9 @@ pub async fn handle_reaction(
                     ))
                 })
                 .await?;
-
-            entry.stars = db_entry.stars + if addition { 1 } else { -1 }
         }
         Err(_) => {
+            // If there isn't an entry, create a message in the starboard channel.
             if user_reactions.len() < config.threshold as usize {
                 return Ok(());
             }
@@ -163,10 +182,20 @@ pub async fn handle_reaction(
                         .description(format!("[Original]({})", message_link))
                         .image(format!(
                             "{}",
-                            if message.attachments.len() == 0 {
-                                ""
-                            } else {
+                            if message.attachments.len() != 0 {
                                 &message.attachments.first().unwrap().url
+                            } else if message.embeds.len() != 0 {
+                                let embed = &message.embeds.first().unwrap();
+
+                                if let Some(image) = &embed.image {
+                                    &image.url
+                                } else if let Some(image) = &embed.thumbnail {
+                                    &image.url
+                                } else {
+                                    ""
+                                }
+                            } else {
+                                ""
                             }
                         ))
                     })
